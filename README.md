@@ -1,2 +1,1 @@
-"# Wordle-Champs" 
-"Welcome to Wordle-Game" 
+"Fintech App"
