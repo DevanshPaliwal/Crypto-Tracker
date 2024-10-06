@@ -1,1 +1,1 @@
-"Fintech App"
+Crytpo Currency Stats and realtime updates
