@@ -43,7 +43,7 @@ const Page = () => {
                 <TouchableOpacity
                     style={[defaultStyles.pillButton,
                     phoneNumber !== '' ? styles.enabled : styles.disabled,
-                    { marginTop: 100 },]}
+                    { marginTop: 50 },]}
                     onPress={onSignup}
                 >
                     <Text style={defaultStyles.buttonText}>Signup</Text>
