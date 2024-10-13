@@ -1,4 +1,5 @@
 import Colors from '@/constants/Colors';
+import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
 import { Ionicons } from '@expo/vector-icons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
@@ -9,7 +10,27 @@ import { useEffect } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
+const CLERK_PUBLISHABLE_KEY=process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+import * as SecureStore from 'expo-secure-store';
 
+const tokenCache={
+  async getToken(key:string){
+    try{
+      return SecureStore.getItemAsync(key); // retrieve the token value for this key
+    }
+    catch(err){
+      return null; // if not able to retrieve the token then return null
+    }
+  },
+  async saveToken(key:string,value:string){
+    try{
+      return SecureStore.setItemAsync(key,value); // save the token value for this key
+    }
+    catch(err){
+      return;
+    }
+  },
+}
 
 
 export {
@@ -28,7 +49,9 @@ const InitialLayout = () => {
     ...FontAwesome.font,
   });
 
-  const router=useRouter()
+  const router = useRouter()
+
+  const {isLoaded,isSignedIn}=useAuth();
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
@@ -40,6 +63,10 @@ const InitialLayout = () => {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
+
+  useEffect(()=>{
+    console.log('isSignedIn: ',isSignedIn)
+  },[isSignedIn])
 
   if (!loaded) {
     return null;
@@ -76,25 +103,38 @@ const InitialLayout = () => {
         ),
         headerRight: () => (
           <Link href={'/help'} asChild >
-          <TouchableOpacity>
-            <Ionicons name="help-circle-outline" size={30} color={Colors.dark} />
-          </TouchableOpacity>
+            <TouchableOpacity>
+              <Ionicons name="help-circle-outline" size={30} color={Colors.dark} />
+            </TouchableOpacity>
           </Link>
         )
       }} />
       <Stack.Screen name='help' options={{
-        title:'Help',
-        presentation:'modal',
-        headerTitleAlign:'center',
-        headerStyle:{
-          backgroundColor:'#e6e9fa',
+        title: 'Help',
+        presentation: 'modal',
+        headerTitleAlign: 'center',
+        headerStyle: {
+          backgroundColor: '#e6e9fa',
         },
         headerLeft: () => (
           <TouchableOpacity onPress={router.back}>
             <Ionicons name="chevron-back-outline" size={30} color={Colors.dark} />
           </TouchableOpacity>
         ),
-      }}  />
+      }} />
+      <Stack.Screen name='verify/[phone]' options={{
+        title: '',
+        headerBackTitle: '',
+        headerShadowVisible: false,
+        headerStyle: {
+          backgroundColor: Colors.background,
+        },
+        headerLeft: () => (
+          <TouchableOpacity onPress={router.back}>
+            <Ionicons name="chevron-back-outline" size={30} color={Colors.dark} />
+          </TouchableOpacity>
+        )
+      }} />
     </Stack>
 
   );
@@ -102,11 +142,13 @@ const InitialLayout = () => {
 
 const RootLayoutNav = () => {
   return (
-    <GestureHandlerRootView style={{flex:1}}>
-    <StatusBar style='light' />
-      <InitialLayout/>
+    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY!} tokenCache={tokenCache}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <StatusBar style='light' />
+        <InitialLayout />
       </GestureHandlerRootView>
-    );
+    </ClerkProvider>
+  );
 }
 
 export default RootLayoutNav;

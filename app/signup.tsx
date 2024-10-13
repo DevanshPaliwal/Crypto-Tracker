@@ -3,14 +3,29 @@ import React, { useState } from 'react'
 import { defaultStyles } from '@/constants/Styles'
 import { TextInput } from 'react-native'
 import Colors from '@/constants/Colors'
-import { Link } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
+import { useSignUp } from '@clerk/clerk-expo'
 
 const Page = () => {
     const [countryCode, setCountryCode] = useState('+91')
     const [phoneNumber, setPhoneNumber] = useState('')
 
-    const onSignup = async () => {
+    const router=useRouter();
+    const {signUp}=useSignUp();
 
+    const onSignup = async () => {
+        const fullPhoneNumber= `${countryCode}${phoneNumber}`;
+        
+        try{
+            await signUp!.create({ // '!' defines that the object will never be null or undefined
+                phoneNumber:fullPhoneNumber,
+            });
+            signUp!.preparePhoneNumberVerification();
+            router.push({pathname:'/verify/[phone]',params: {phone:fullPhoneNumber}});
+        }
+        catch(error){
+            console.log("Error signing up: ",error);
+        }
     }
 
     return (
