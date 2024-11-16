@@ -21,7 +21,10 @@ const Page = () => {
                 phoneNumber:fullPhoneNumber,
             });
             signUp!.preparePhoneNumberVerification();
-            router.push({pathname:'/verify/[phone]',params: {phone:fullPhoneNumber}});
+            router.push({
+                pathname:'/verify/[phone]',
+                params: {phone:fullPhoneNumber}
+            });
         }
         catch(error){
             console.log("Error signing up: ",error);
@@ -29,7 +32,6 @@ const Page = () => {
     }
 
     return (
-        <KeyboardAvoidingView style={{ flex: 1 }}>
             <View style={defaultStyles.container}>
                 <Text style={defaultStyles.header}>Let's get started!</Text>
                 <Text style={defaultStyles.descriptionText} >Enter your phone number, we will send you a confirmation code.</Text>
@@ -64,10 +66,10 @@ const Page = () => {
                     <Text style={defaultStyles.buttonText}>Signup</Text>
                 </TouchableOpacity>
             </View>
-        </KeyboardAvoidingView>
     )
 }
-// with replace we directly go to home 
+// with replace we directly go to home after signup
+// we don't comeback to login screen again
 
 const styles = StyleSheet.create({
     inputContainer: {
