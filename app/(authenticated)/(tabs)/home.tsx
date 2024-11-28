@@ -4,19 +4,27 @@ import { ScrollView } from 'react-native-gesture-handler';
 import Colors from '@/constants/Colors';
 import RoundBtn from '@/app/components/RoundBtn';
 import Dropdown from '@/app/components/Dropdown';
+import { useBalanceStore } from '@/store/balanceStore';
+
 
 const Page = () => {
-  const balance=1420; // current amount of balance
+  const {balance,runTransaction,transactions,clearTransactions}=useBalanceStore(); // current amount of balance
 
   const onAddMoney=()=>{
-
+    console.log("Adding money...");
+    runTransaction({
+      id:Math.random().toString(),
+      amount:Math.floor(Math.random()*1000)*(Math.random()>0.5?1:-1),
+      date:new Date(),
+      title:'Added Money',
+    })
   }
 
   return (
     <ScrollView style={{backgroundColor:Colors.background}}>
       <View style={styles.account}>
         <View style={styles.row}>
-        <Text style={styles.balance}>{balance}</Text>
+        <Text style={styles.balance}>{balance()}</Text>
         <Text style={styles.currency}>$</Text>
         </View>
       </View>
@@ -25,7 +33,7 @@ const Page = () => {
         <RoundBtn icon={'add'} text={'Add money'} onPress={onAddMoney} />
         <RoundBtn icon={'refresh'} text={'Exchange'} />
         <RoundBtn icon={'list'} text={'Details'}  />
-        <Dropdown  />
+        <Dropdown/>
       </View>
     </ScrollView>
   )
